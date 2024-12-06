@@ -1,12 +1,12 @@
 {
-    "ID": "",
-    "ActionKeyword": "",
-    "Name": "",
-    "Description": "",
-    "Author": "",
+    "ID": "575719eb-6e8b-4546-adbd-863062c4365f",
+    "ActionKeyword": "py",
+    "Name": "PyRepl",
+    "Description": "A python repl implimentation in flow",
+    "Author": "cibere",
     "Version": "0.0.1",
     "Language": "python_v2",
-    "Website": "",
+    "Website": "https://github.com/cibere/Flow.Launcher.Plugin.PyRepl",
     "IcoPath": "Images\\app.png",
     "ExecuteFileName": "main.py"
 }

@@ -1,3 +1,11 @@
-from flogin import Plugin
+from flogin import Query
 
-plugin = Plugin()
+from .plugin import PyReplPlugin
+from .result import ReplResult
+
+plugin = PyReplPlugin()
+
+
+@plugin.search()
+async def handler(query: Query):
+    return ReplResult(query)
