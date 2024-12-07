@@ -50,10 +50,6 @@ class ReplResult(Result):
             sub=query.text,
         )
 
-    def prep_code(self, code: str):
-        body = f"x = {code}\nprint(x)"
-        return body
-
     async def callback(self):
         log.info(f"Starting callback")
 
@@ -67,20 +63,22 @@ class ReplResult(Result):
 
         env.update(globals())
 
-        to_compile = self.prep_code(self.query.text)
+        to_compile = self.query.text
         log.info(f"{to_compile!r}")
 
         async with RedirectedStdout() as otp:
             try:
-                import_expression.exec(to_compile, env)
+                res = import_expression.eval(to_compile, env)
             except Exception as e:
                 txt = f"{otp}\n\n{traceback.format_exc()}"
                 show_error("PyRepl Error", txt)
                 return ExecuteResponse(hide=False)
+            
+            self.plugin.last_result = res
 
             await self.plugin.api.update_results(
                 self.query.raw_text,
-                [Result(line, icon="icon.png") for line in str(otp).splitlines()],
+                [Result(repr(res), icon="icon.png")] + [Result(line, icon="icon.png") for line in str(otp).splitlines()],
             )
             # tkinter.messagebox.showinfo("PyRepl Result", str(otp))
 
