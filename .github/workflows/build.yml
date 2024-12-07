@@ -45,7 +45,7 @@ jobs:
       
       - name: Archive Release
         run: |
-          create_build_archive.py ${{ github.event.repository.name }}.zip
+          python create_build_archive.py ${{ github.event.repository.name }}.zip
         
       - name: Publish
         if: success()
