@@ -1,18 +1,22 @@
 import io
 import os
 import random
-import sys, tkinter
-from textwrap import indent
+import sys
+import tkinter
 import tkinter.messagebox
-import traceback, import_expression
+import traceback
 from contextlib import redirect_stdout
 from logging import getLogger
-from .ui import show_error
+from textwrap import indent
+
+import import_expression
 from flogin import ExecuteResponse, Glyph, Query, Result
 
 from .plugin import PyReplPlugin
+from .ui import show_error
 
 log = getLogger(__name__)
+
 
 class RedirectedStdout:
     def __init__(self):
@@ -30,13 +34,21 @@ class RedirectedStdout:
     def __str__(self):
         return self._string_io.getvalue()  # type: ignore
 
+
 class ReplResult(Result):
     plugin: PyReplPlugin  # type: ignore
 
     def __init__(self, query: Query) -> None:
         self.query = query
         log.info(f"Creating result with {self.query!r}")
-        super().__init__("Execute Code?", icon=Glyph("py", "Calibri"))
+        super().__init__(
+            "Execute Code?",
+            icon="icon.png",
+            auto_complete_text="".join(
+                random.choices("qwertyuiopasdfghjklzxcvbnm", k=5)
+            ),
+            sub=query.text,
+        )
 
     def prep_code(self, code: str):
         body = f"x = {code}\nprint(x)"
@@ -66,6 +78,10 @@ class ReplResult(Result):
                 show_error("PyRepl Error", txt)
                 return ExecuteResponse(hide=False)
 
-            tkinter.messagebox.showinfo("PyRepl Result", str(otp))
+            await self.plugin.api.update_results(
+                self.query.raw_text,
+                [Result(line, icon="icon.png") for line in str(otp).splitlines()],
+            )
+            # tkinter.messagebox.showinfo("PyRepl Result", str(otp))
 
         return ExecuteResponse(hide=False)
