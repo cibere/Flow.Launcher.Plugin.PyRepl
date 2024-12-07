@@ -80,6 +80,5 @@ class ReplResult(Result):
                 self.query.raw_text,
                 [Result(repr(res), icon="icon.png")] + [Result(line, icon="icon.png") for line in str(otp).splitlines()],
             )
-            # tkinter.messagebox.showinfo("PyRepl Result", str(otp))
 
         return ExecuteResponse(hide=False)
