@@ -43,17 +43,13 @@ jobs:
           path: "plugin.json"
           prop_path: "Version"
       
-      - name: Move included files into dist
-        run: |
-          move plugin.json dist/plugin.json
-          move icon.png dist/icon.png
-
       - name: Archive Release
         uses: thedoctor0/zip-release@main
         with:
           type: "zip"
-          directory: ./dist
+          directory: .
           filename: "${{github.event.repository.name}}.zip"
+          recursive_exclusions: '*.py .github build dist plugin .gitattributes .gitignore *.txt *.spec *.md *.log'
 
       - name: Publish
         if: success()
