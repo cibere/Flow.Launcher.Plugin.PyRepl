@@ -7,6 +7,6 @@
     "Version": "0.0.1",
     "Language": "python_v2",
     "Website": "https://github.com/cibere/Flow.Launcher.Plugin.PyRepl",
-    "IcoPath": "Images\\app.png",
+    "IcoPath": "icon.png",
     "ExecuteFileName": "main.py"
 }
