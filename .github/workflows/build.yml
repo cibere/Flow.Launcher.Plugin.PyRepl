@@ -34,7 +34,7 @@ jobs:
 
       - name: Build
         run: |
-          python -m pyinstaller -i icon.png -F --distpath . main.py
+          pyinstaller -i icon.png -F --distpath . main.py
 
       - name: Get Plugin's version
         id: version
