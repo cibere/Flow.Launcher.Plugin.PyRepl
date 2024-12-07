@@ -42,11 +42,17 @@ jobs:
         with:
           path: "plugin.json"
           prop_path: "Version"
+      
+      - name: Move included files into dist
+        run: |
+          move plugin.json dist/plugin.json
+          move icon.png dist/icon.png
 
       - name: Archive Release
         uses: thedoctor0/zip-release@main
         with:
           type: "zip"
+          directory: ./dist
           filename: "${{github.event.repository.name}}.zip"
 
       - name: Publish
