@@ -34,7 +34,7 @@ jobs:
 
       - name: Build
         run: |
-          python -m nuitka run.py --assume-yes-for-downloads --standalone --windows-icon-from-ico=icon.png --include-data-file=plugin.json=. --include-data-file=LICENSE=.
+          python -m pyinstaller -i icon.png -F --distpath . main.py
 
       - name: Get Plugin's version
         id: version
@@ -43,19 +43,13 @@ jobs:
           path: "plugin.json"
           prop_path: "Version"
 
-      - name: Archive Release
-        uses: thedoctor0/zip-release@main
-        with:
-          type: "zip"
-          directory: "./run.dist"
-          filename: "${{github.event.repository.name}}.zip"
+      - name: Create Archive
+        run: zip -r ${{ github.event.repository.name }}.zip . -x '*.git*'
 
       - name: Publish
-        uses: softprops/action-gh-release@v1
+        if: success()
+        uses: softprops/action-gh-release@v2
         with:
-          draft: false
-          files: "./run.dist/${{github.event.repository.name}}.zip"
+          files: '${{ github.event.repository.name }}.zip'
           tag_name: "v${{steps.version.outputs.prop}}"
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          body_path: 'CHANGELOG.txt'
