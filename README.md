@@ -10,7 +10,7 @@ Flow Launcher's default python version uses 3.11. However, since PyRepl is built
 | PyRepl | Python |
 |--------|--------|
 |0.0.2|3.13.1|
-|0.0.1|3.12.0|
+|0.0.1|3.11.9|
 
 ### Import Expressions
 
