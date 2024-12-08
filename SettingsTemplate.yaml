@@ -1,0 +1,6 @@
+body:
+  - type: input
+    attributes:
+      name: site_packages_path
+      label: Path to additional packages
+      description: If you would like additional packages to be available to you when using PyRepl, state the path to the directory that contains said packages here.

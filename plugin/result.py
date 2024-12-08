@@ -2,15 +2,12 @@ import io
 import os
 import random
 import sys
-import tkinter
 import tkinter.messagebox
 import traceback
-from contextlib import redirect_stdout
 from logging import getLogger
-from textwrap import indent
 
 import import_expression
-from flogin import ExecuteResponse, Glyph, Query, Result
+from flogin import ExecuteResponse, Query, Result, SettingNotFound
 
 from .plugin import PyReplPlugin
 from .ui import show_error
@@ -53,6 +50,13 @@ class ReplResult(Result):
     async def callback(self):
         log.info(f"Starting callback")
 
+        try:
+            if self.plugin.settings.site_packages_path not in sys.path:
+                sys.path.append(self.plugin.settings.site_packages_path)
+                log.info(f"Added {self.plugin.settings.site_packages_path!r} to path")
+        except SettingNotFound:
+            pass
+
         env = {
             "random": random,
             "_": self.plugin.last_result,
@@ -72,7 +76,7 @@ class ReplResult(Result):
             except Exception as e:
                 txt = f"{otp}\n\n{traceback.format_exc()}"
                 show_error("PyRepl Error", txt)
-                return ExecuteResponse(hide=False)
+                return ExecuteResponse(hide=True)
             
             self.plugin.last_result = res
 

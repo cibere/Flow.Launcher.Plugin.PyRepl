@@ -1,6 +1,6 @@
 import zipfile, click
 
-FILES = ("plugin.json", "main.exe", "icon.png")
+FILES = ("plugin.json", "main.exe", "icon.png", "SettingsTemplate.yaml")
 
 @click.command()
 @click.argument("name")
