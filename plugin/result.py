@@ -72,7 +72,7 @@ class ReplResult(Result):
             except Exception as e:
                 txt = f"{otp}\n\n{traceback.format_exc()}"
                 show_error("PyRepl Error", txt)
-                return ExecuteResponse(hide=False)
+                return ExecuteResponse(hide=True)
             
             self.plugin.last_result = res
 
