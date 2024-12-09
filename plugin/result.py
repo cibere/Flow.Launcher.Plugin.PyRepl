@@ -5,10 +5,12 @@ import random
 import sys
 import traceback
 from logging import getLogger
+from typing import Unpack
 
 import import_expression
 import pyperclip
 from flogin import ExecuteResponse, Query, Result, SettingNotFound
+from flogin.jsonrpc.results import ResultConstructorArgs
 
 from .plugin import PyReplPlugin
 from .ui import show_error
@@ -31,6 +33,26 @@ class RedirectedStdout:
 
     def __str__(self):
         return self._string_io.getvalue()  # type: ignore
+
+
+class ErrorResult(Result):
+    plugin: PyReplPlugin  # type: ignore
+
+    def __init__(self, error: Exception, txt: str) -> None:
+        self.txt = txt
+        super().__init__(
+            f"An error has occured: {error.__class__.__name__}: {error}",
+            icon="error.png",
+            sub="Click to view traceback",
+            auto_complete_text="".join(
+                random.choices("qwertyuiopasdfghjklzxcvbnm", k=5)
+            ),
+        )
+
+    async def callback(self):
+        log.info(f"Showing error")
+        show_error("PyRepl Error", self.txt)
+        return ExecuteResponse(hide=True)
 
 
 class ReplResult(Result):
@@ -89,22 +111,29 @@ class ReplResult(Result):
         log.info(f"{to_compile!r}")
 
         async with RedirectedStdout() as otp:
+            if self.use_clipboard:
+                await self.plugin.api.change_query(self.query.keyword)
+
             try:
                 res = import_expression.eval(to_compile, env)
             except Exception as e:
                 txt = f"{otp}\n\n{traceback.format_exc()}"
-                show_error("PyRepl Error", txt)
-                return ExecuteResponse(hide=True)
 
-            self.plugin.last_result = res
+                if self.plugin.settings.just_show_me_the_tb is True:
+                    show_error("PyRepl Error", txt)
+                else:
+                    res = ErrorResult(e, txt)
+                    self.plugin._results[res.slug] = (
+                        res  # have to manually register it for the action to work cuz in this version of flogin, `update_results` does not register the results
+                    )
+                    await self.plugin.api.update_results(self.query.raw_text, [res])
+            else:
+                self.plugin.last_result = res
 
-            if self.use_clipboard:
-                await self.plugin.api.change_query(self.query.keyword)
-
-            await self.plugin.api.update_results(
-                self.query.raw_text,
-                [Result(repr(res), icon="icon.png")]
-                + [Result(line, icon="icon.png") for line in str(otp).splitlines()],
-            )
+                await self.plugin.api.update_results(
+                    self.query.raw_text,
+                    [Result(repr(res), icon="icon.png")]
+                    + [Result(line, icon="icon.png") for line in str(otp).splitlines()],
+                )
 
         return ExecuteResponse(hide=False)

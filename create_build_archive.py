@@ -2,7 +2,7 @@ import zipfile
 
 import click
 
-FILES = ("plugin.json", "main.exe", "icon.png", "SettingsTemplate.yaml")
+FILES = ("plugin.json", "main.exe", "icon.png", "SettingsTemplate.yaml", "error.png")
 
 
 @click.command()
