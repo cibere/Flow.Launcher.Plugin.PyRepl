@@ -2,7 +2,7 @@ import io
 import os
 import random
 import sys
-import tkinter.messagebox
+import pyperclip
 import traceback
 from logging import getLogger
 
@@ -37,14 +37,17 @@ class ReplResult(Result):
 
     def __init__(self, query: Query) -> None:
         self.query = query
+        self.use_clipboard = query.raw_text == query.keyword
+
         log.info(f"Creating result with {self.query!r}")
+
         super().__init__(
             "Execute Code?",
             icon="icon.png",
             auto_complete_text="".join(
                 random.choices("qwertyuiopasdfghjklzxcvbnm", k=5)
             ),
-            sub=query.text,
+            sub="Use clipboard contents" if self.use_clipboard else query.text,
         )
 
     async def callback(self):
@@ -67,7 +70,10 @@ class ReplResult(Result):
 
         env.update(globals())
 
-        to_compile = self.query.text
+        if self.use_clipboard:
+            to_compile = pyperclip.paste()
+        else:
+            to_compile = self.query.text
         log.info(f"{to_compile!r}")
 
         async with RedirectedStdout() as otp:
@@ -80,6 +86,9 @@ class ReplResult(Result):
             
             self.plugin.last_result = res
 
+            if self.use_clipboard:
+                await self.plugin.api.change_query(self.query.keyword)
+                
             await self.plugin.api.update_results(
                 self.query.raw_text,
                 [Result(repr(res), icon="icon.png")] + [Result(line, icon="icon.png") for line in str(otp).splitlines()],
