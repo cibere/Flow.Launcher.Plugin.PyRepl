@@ -4,3 +4,15 @@ body:
       name: site_packages_path
       label: Path to additional packages
       description: If you would like additional packages to be available to you when using PyRepl, state the path to the directory that contains said packages here.
+  - type: textarea
+    attributes:
+      name: env_json
+      label: Additional ENV values in JSON format
+      description: >
+        You should provide a dictionary in JSON format which will be added to the ENV parameters before PyRepl executes your code.
+  - type: checkbox
+    attributes:
+      name: just_show_me_the_tb
+      label: Just show me the traceback
+      description: If checked, PyRepl will skip the `An error has occured` result, and just show you the traceback.
+      defaultValue: false
