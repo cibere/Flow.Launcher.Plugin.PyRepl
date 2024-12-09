@@ -1,6 +1,6 @@
 import io
 import os
-import random
+import random, json
 import sys
 import pyperclip
 import traceback
@@ -59,6 +59,14 @@ class ReplResult(Result):
                 log.info(f"Added {self.plugin.settings.site_packages_path!r} to path")
         except SettingNotFound:
             pass
+        try:
+            additional_env = json.loads(self.plugin.settings.env_json)
+        except SettingNotFound:
+            additional_env = {}
+        except json.JSONDecodeError as e:
+            await self.plugin.api.show_error_message("PyRepl", f"Additional ENV parameters are not in a valid JSON format: {e!r}")
+            await self.plugin.api.open_settings_menu()
+            return ExecuteResponse()
 
         env = {
             "random": random,
@@ -66,7 +74,7 @@ class ReplResult(Result):
             "os": os,
             "sys": sys,
             "io": io,
-        }
+        } | additional_env
 
         env.update(globals())
 
@@ -88,7 +96,7 @@ class ReplResult(Result):
 
             if self.use_clipboard:
                 await self.plugin.api.change_query(self.query.keyword)
-                
+
             await self.plugin.api.update_results(
                 self.query.raw_text,
                 [Result(repr(res), icon="icon.png")] + [Result(line, icon="icon.png") for line in str(otp).splitlines()],
