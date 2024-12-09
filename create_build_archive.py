@@ -1,6 +1,9 @@
-import zipfile, click
+import zipfile
+
+import click
 
 FILES = ("plugin.json", "main.exe", "icon.png", "SettingsTemplate.yaml")
+
 
 @click.command()
 @click.argument("name")
@@ -9,6 +12,7 @@ def create_archive(name: str):
         for file in FILES:
             zf.write(file)
             print(f"Added {file}")
+
 
 if __name__ == "__main__":
     create_archive()

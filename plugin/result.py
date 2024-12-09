@@ -1,12 +1,13 @@
 import io
+import json
 import os
-import random, json
+import random
 import sys
-import pyperclip
 import traceback
 from logging import getLogger
 
 import import_expression
+import pyperclip
 from flogin import ExecuteResponse, Query, Result, SettingNotFound
 
 from .plugin import PyReplPlugin
@@ -64,7 +65,10 @@ class ReplResult(Result):
         except SettingNotFound:
             additional_env = {}
         except json.JSONDecodeError as e:
-            await self.plugin.api.show_error_message("PyRepl", f"Additional ENV parameters are not in a valid JSON format: {e!r}")
+            await self.plugin.api.show_error_message(
+                "PyRepl",
+                f"Additional ENV parameters are not in a valid JSON format: {e!r}",
+            )
             await self.plugin.api.open_settings_menu()
             return ExecuteResponse()
 
@@ -91,7 +95,7 @@ class ReplResult(Result):
                 txt = f"{otp}\n\n{traceback.format_exc()}"
                 show_error("PyRepl Error", txt)
                 return ExecuteResponse(hide=True)
-            
+
             self.plugin.last_result = res
 
             if self.use_clipboard:
@@ -99,7 +103,8 @@ class ReplResult(Result):
 
             await self.plugin.api.update_results(
                 self.query.raw_text,
-                [Result(repr(res), icon="icon.png")] + [Result(line, icon="icon.png") for line in str(otp).splitlines()],
+                [Result(repr(res), icon="icon.png")]
+                + [Result(line, icon="icon.png") for line in str(otp).splitlines()],
             )
 
         return ExecuteResponse(hide=False)
