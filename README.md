@@ -1,6 +1,12 @@
 # Flow.Launcher.Plugin.PyRepl
 A python repl implimentation in flow
 
+## My Antivirus flagged PyRepl as a virus
+
+In order to get the traceback window and the latest version of python to work on every user's device with minimal setup, the released versions of PyRepl are built and packaged as standalone exe files, which very often get flagged as malware.
+
+The building process happens automatically through github actions (see [here](https://github.com/cibere/Flow.Launcher.Plugin.PyRepl/actions) for this project's actions), so there is no need to worry about malware. However, you can always build the plugin yourself.
+
 ## Features
 
 ### Up to date python
