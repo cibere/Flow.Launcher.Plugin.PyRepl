@@ -9,12 +9,22 @@ The building process happens automatically through github actions (see [here](ht
 
 ## Features
 
+- [Up to date python](#up-to-date-python)
+- [Import Expressions](#import-expressions)
+- [Custom 3rd Party Packages](#custom-3rd-party-packages)
+- [Returning results without printing](#returning-results-without-printing)
+- [Accessing previous result](#accessing-previous-result)
+- [Viewing the console in flow](#viewing-the-console-in-flow)
+- [Viewing full tracebacks](#viewing-full-tracebacks)
+- [Custom ENV values](#custom-env-values)
+
 ### Up to date python
 
 Flow Launcher's default python version uses 3.11. However, since PyRepl is built into an exe and as far as flow is concerned, not written in python, it gets to choose it's own python version. Here are a list of PyRepl versions and which version of python they ship with:
 
 | PyRepl | Python |
 |--------|--------|
+|0.0.3|3.13.1|
 |0.0.2|3.13.1|
 |0.0.1|3.11.9|
 
@@ -55,3 +65,10 @@ After the input's result, PyRepl will show each line that was printed to the con
 In the case of an error, PyRepl will create a window that contains the traceback to easily access and read it.
 
 ![Example](assets/traceback_example.png)
+
+### Custom ENV values
+
+In the settings menu you can provide a dictionary in json form which will be added to the env parameter which is used when executing your code.
+
+![](assets/custom_env_values_settings_menu.png)
+![](assets/py_(best_success).png)
