@@ -2,3 +2,4 @@
 
 - If no code is provided, use clipboard content
 - Add the ability to add custom ENV values through a dictionary in json format
+- ensure traceback window is at the top when created

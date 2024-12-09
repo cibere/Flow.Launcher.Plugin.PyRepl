@@ -11,6 +11,7 @@ class ErrorWindow(tk.Tk):
         self.rowconfigure(0, weight=0)
         self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
+        self.lift()
 
         text_frame = tk.Frame(self)
         text_frame.grid(row=1, column=0, padx=(7, 7), pady=(7, 7), sticky="nsew")
