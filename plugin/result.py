@@ -86,7 +86,7 @@ class ReplResult(Result):
             additional_env = json.loads(self.plugin.settings.env_json)
         except SettingNotFound:
             additional_env = {}
-        except json.JSONDecodeError as e:
+        except (json.JSONDecodeError, TypeError) as e:
             await self.plugin.api.show_error_message(
                 "PyRepl",
                 f"Additional ENV parameters are not in a valid JSON format: {e!r}",
