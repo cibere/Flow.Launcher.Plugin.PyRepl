@@ -9,14 +9,13 @@ from typing import Unpack
 
 import import_expression
 import pyperclip
-from flogin import ExecuteResponse, Query, Result, SettingNotFound
+from flogin import ExecuteResponse, Query, Result, SettingNotFound, Glyph
 from flogin.jsonrpc.results import ResultConstructorArgs
 
 from .plugin import PyReplPlugin
 from .ui import show_error
 
 log = getLogger(__name__)
-
 
 class RedirectedStdout:
     def __init__(self):
@@ -34,6 +33,18 @@ class RedirectedStdout:
     def __str__(self):
         return self._string_io.getvalue()  # type: ignore
 
+class CopyResult(Result):
+    def __init__(self, txt: str, **kwargs: Unpack[ResultConstructorArgs]) -> None:
+        self.txt = txt
+        super().__init__(**kwargs)
+    
+    async def callback(self):
+        assert self.plugin
+
+        pyperclip.copy(self.txt)
+        await self.plugin.api.show_notification("PyRepl", "Successfully copied text", "icon.png")
+
+        return ExecuteResponse(hide=False)
 
 class ErrorResult(Result):
     plugin: PyReplPlugin  # type: ignore
@@ -54,6 +65,20 @@ class ErrorResult(Result):
         show_error("PyRepl Error", self.txt)
         return ExecuteResponse(hide=True)
 
+class StdoutLineResult(Result):
+    plugin: PyReplPlugin  # type: ignore
+
+    def __init__(self, **kwargs: Unpack[ResultConstructorArgs]) -> None:
+        self.line = kwargs['title']
+        if "icon" not in kwargs:
+            kwargs['icon'] = "icon.png"
+        if "copy_text" not in kwargs:
+            kwargs['copy_text'] = self.line
+
+        super().__init__(**kwargs)
+    
+    async def context_menu(self):
+        return CopyResult(self.line, title="Copy Text", sub=self.line, icon=Glyph("\U0001f4cb", "Calibri"))
 
 class ReplResult(Result):
     plugin: PyReplPlugin  # type: ignore
@@ -130,10 +155,16 @@ class ReplResult(Result):
             else:
                 self.plugin.last_result = res
 
+                results = [StdoutLineResult(title=repr(res), score=100)] + [StdoutLineResult(title=line) for line in str(otp).splitlines()]
+
+                for res in results:
+                    self.plugin._results[res.slug] = (
+                        res  # have to manually register it for the action to work cuz in this version of flogin, `update_results` does not register the results
+                    )
+                
                 await self.plugin.api.update_results(
                     self.query.raw_text,
-                    [Result(repr(res), icon="icon.png")]
-                    + [Result(line, icon="icon.png") for line in str(otp).splitlines()],
+                    results, # type: ignore
                 )
 
         return ExecuteResponse(hide=False)

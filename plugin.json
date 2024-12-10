@@ -4,7 +4,7 @@
     "Name": "Dev - PyRepl",
     "Description": "A python repl implimentation in flow",
     "Author": "cibere",
-    "Version": "0.0.4",
+    "Version": "0.0.5",
     "Language": "python_v2",
     "Website": "https://github.com/cibere/Flow.Launcher.Plugin.PyRepl",
     "IcoPath": "icon.png",
