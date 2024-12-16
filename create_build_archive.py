@@ -8,6 +8,9 @@ FILES = ("plugin.json", "main.py", "icon.png", "SettingsTemplate.yaml", "error.p
 @click.command()
 @click.argument("name")
 def create_archive(name: str):
+    if not name.endswith(".zip"):
+        name = f"{name}.zip"
+        
     with zipfile.ZipFile(name, "w") as zf:
         for file in FILES:
             zf.write(file)
