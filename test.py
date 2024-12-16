@@ -1,30 +1,30 @@
+from plugin.repl_result import ReplResult
 from flogin import Query
-from flogin.utils import setup_logging
+import asyncio
+from flogin.testing import PluginTester
 
-from plugin.result import PyReplPlugin, ReplResult
+class APIClass:
+    async def change_query(self, *args):
+        print(f"--- change query w/ {args!r} ---")
+    
+    async def update_results(self, *args):
+        print(f'--- update results w/ {args!r} ---')
 
-setup_logging()
-
-code = """
-print("hi")#; raise RuntimeError("hi")
-""".strip()
-
-q = Query(
-    {
-        "rawQuery": f"py {code}",
-        "search": code,
-        "actionKeyword": "py",
-        "isReQuery": False,
-    }
-)
-res = ReplResult(q)
-res.plugin = PyReplPlugin()
-
+    async def show_notification(self, *args):
+        print(f'--- show_notification w/ {args!r} ---')
 
 async def main():
+    from plugin.plugin import PyReplPlugin
+    tester = PluginTester(PyReplPlugin(), metadata=None, flow_api_client=APIClass())
+
+    query = Query(raw_text="py print(100)", text="print(100))", keyword="py")
+    response = await tester.test_query(query)
+
+    print(response.results)
+
+    res = response.results[0]
+
+    res.plugin = tester.plugin
     await res.callback()
-
-
-import asyncio
 
 asyncio.run(main())

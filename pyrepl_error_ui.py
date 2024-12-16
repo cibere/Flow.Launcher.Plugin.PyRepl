@@ -25,3 +25,7 @@ class ErrorWindow(tk.Tk):
 
 def show_error(title: str, msg: str):
     ErrorWindow(title, msg).mainloop()
+
+if __name__ == "__main__":
+    import sys
+    show_error("PyRepl Error", " ".join(sys.argv))

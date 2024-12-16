@@ -32,9 +32,9 @@ jobs:
         run: |
           pip install -r ./requirements-dev.txt
 
-      - name: Build
+      - name: Build Error UI
         run: |
-          pyinstaller -i icon.png -F --distpath . main.py
+          pyinstaller -w pyrepl_error_ui.py
 
       - name: Get Plugin's version
         id: version
